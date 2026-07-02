@@ -150,7 +150,8 @@ app-data/
 *.raw
 *.wav
 *.pcm
-*.ts
+*.mpegts
+*.segment.ts
 *.m3u8
 *.segment
 

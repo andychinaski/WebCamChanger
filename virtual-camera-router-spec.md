@@ -552,11 +552,19 @@ Pipeline должен иметь frame scheduler.
 - создать минимальную виртуальную камеру на Windows;
 - добиться видимости в Zoom;
 - вывести тестовую цветную картинку.
+- отдельно упаковать desktop shell как Tauri `.exe`/MSI, не смешивая это с установкой virtual camera driver.
 
 Результат:
 
 - Zoom видит `Chinaski Virtual Camera`;
 - камера отдаёт тестовый frame.
+- desktop-приложение запускается как отдельное Windows-приложение.
+
+Уточнение:
+
+- MSI desktop-приложения и installer/registration шаг виртуальной камеры являются разными артефактами.
+- Первый может быть готов раньше.
+- Второй требует COM Custom Media Source, `MFCreateVirtualCamera` и, вероятно, elevated install/remove flow.
 
 ---
 

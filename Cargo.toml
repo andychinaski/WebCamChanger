@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+  "apps/desktop/src-tauri",
+  "crates/app-core",
+  "crates/diagnostics",
+  "crates/media-pipeline",
+  "crates/virtual-camera-bridge",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+
