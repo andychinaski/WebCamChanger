@@ -113,7 +113,7 @@ The C++ module currently contains a buildable registration skeleton and exported
 - `CheckChinaskiVirtualCameraSupport`
 - `GetChinaskiVirtualCameraBackend`
 
-It detects Media Foundation on Windows 11 and DirectShow on Windows 10. It intentionally returns `E_NOTIMPL` for registration until the backend source/filter and installation flow exist.
+It detects Media Foundation on Windows 11 and DirectShow on Windows 10. Windows 10 now attempts DirectShow COM/filter registration. Windows 11 still returns `E_NOTIMPL` until the Media Foundation Custom Media Source and installation flow exist.
 
 ## Diagnostics
 

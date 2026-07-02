@@ -56,7 +56,7 @@ Expected current spike result: registration calls `chinaski-vcamctl.exe`. The su
 - Windows 10: `using backend directshow`
 - Windows 11: `using backend media-foundation`
 
-The actual register step should still return native `E_NOTIMPL` until the DirectShow source filter and Media Foundation Custom Media Source exist.
+On Windows 10, the actual register step now attempts DirectShow COM/filter registration. Expected current non-elevated result is `0x80070005`; from elevated PowerShell it should register the filter. On Windows 11, register still returns native `E_NOTIMPL` until the Media Foundation Custom Media Source exists.
 
 ## 3. Visibility In Windows
 

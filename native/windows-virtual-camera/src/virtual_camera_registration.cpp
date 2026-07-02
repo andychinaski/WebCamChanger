@@ -1,10 +1,12 @@
 #include "chinaski_virtual_camera.h"
+#include "chinaski_directshow_filter.h"
 
 #ifdef _WIN32
 #include <combaseapi.h>
 #include <mfapi.h>
 #include <mfidl.h>
 #include <mfvirtualcamera.h>
+#include <strsafe.h>
 #include <windows.h>
 #endif
 
@@ -125,6 +127,30 @@ HRESULT CheckMediaFoundationVirtualCameraSupport() {
 
   return supported ? S_OK : HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
 }
+
+HRESULT GetSiblingVirtualCameraDllPath(wchar_t* path, DWORD pathLength) {
+  if (!path || pathLength == 0) {
+    return E_INVALIDARG;
+  }
+
+  wchar_t modulePath[MAX_PATH]{};
+  DWORD size = GetModuleFileNameW(nullptr, modulePath, ARRAYSIZE(modulePath));
+  if (size == 0 || size >= ARRAYSIZE(modulePath)) {
+    return HRESULT_FROM_WIN32(GetLastError());
+  }
+
+  wchar_t* lastSlash = wcsrchr(modulePath, L'\\');
+  if (!lastSlash) {
+    return E_FAIL;
+  }
+  *(lastSlash + 1) = L'\0';
+
+  HRESULT hr = StringCchCopyW(path, pathLength, modulePath);
+  if (FAILED(hr)) {
+    return hr;
+  }
+  return StringCchCatW(path, pathLength, L"ChinaskiVirtualCamera.dll");
+}
 #endif
 }
 
@@ -194,12 +220,13 @@ int RegisterChinaskiVirtualCamera() {
     return static_cast<int>(dshowSupport);
   }
 
-  // SPIKE: Windows 10 support is implemented through a DirectShow virtual
-  // capture source filter. The backend is selected and validated, but the COM
-  // filter class, CLSID_VideoInputDeviceCategory registration, and frame output
-  // pin are still planned.
-  (void)kCameraName;
-  return static_cast<int>(E_NOTIMPL);
+  wchar_t dllPath[MAX_PATH]{};
+  HRESULT pathHr = GetSiblingVirtualCameraDllPath(dllPath, ARRAYSIZE(dllPath));
+  if (FAILED(pathHr)) {
+    return static_cast<int>(pathHr);
+  }
+
+  return static_cast<int>(RegisterChinaskiDirectShowFilter(dllPath));
 #endif
 }
 
@@ -207,7 +234,16 @@ int UnregisterChinaskiVirtualCamera() {
 #ifndef _WIN32
   return -1;
 #else
-  // TODO: Store/reopen IMFVirtualCamera and call Remove when registration exists.
-  return static_cast<int>(E_NOTIMPL);
+  if (SUCCEEDED(CheckMediaFoundationVirtualCameraSupport())) {
+    // TODO: Store/reopen IMFVirtualCamera and call Remove when registration exists.
+    return static_cast<int>(E_NOTIMPL);
+  }
+
+  HRESULT dshowSupport = CheckDirectShowVirtualCameraSupport();
+  if (FAILED(dshowSupport)) {
+    return static_cast<int>(dshowSupport);
+  }
+
+  return static_cast<int>(UnregisterChinaskiDirectShowFilter());
 #endif
 }

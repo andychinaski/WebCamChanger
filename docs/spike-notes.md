@@ -30,8 +30,8 @@ The native skeleton detects the target backend but does not yet register a worki
 
 - `CheckChinaskiVirtualCameraSupport` dynamically checks Media Foundation support on Windows 11 and DirectShow runtime support on Windows 10.
 - `GetChinaskiVirtualCameraBackend` reports `media-foundation`, `directshow`, or `unsupported`.
-- `RegisterChinaskiVirtualCamera` checks backend support first, then returns `E_NOTIMPL` until the native source/filter exists.
-- No COM Custom Media Source or DirectShow source filter exists yet.
+- `RegisterChinaskiVirtualCamera` checks backend support first. On Windows 10 it attempts DirectShow COM/filter registration; on Windows 11 it still returns `E_NOTIMPL` until the Media Foundation source exists.
+- A minimal DirectShow COM source filter shell exists, but real frame streaming still needs more native work.
 - No frame buffer or IPC path exists yet.
 - No persistent install/uninstall state exists yet.
 - The Rust bridge calls `chinaski-vcamctl.exe` and returns native stdout/stderr into Diagnostics.

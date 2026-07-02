@@ -68,5 +68,5 @@ if (-not $RustOnly -and -not $FrontendOnly) {
   $VcVars64 = Find-VcVars64
   $NativeSource = Join-Path $RepoRoot "native/windows-virtual-camera"
 
-  cmd /s /c "call `"$VcVars64`" >nul && `"$CMake`" -S `"$NativeSource`" -B `"$BuildDir`" -G `"NMake Makefiles`" -DCMAKE_BUILD_TYPE=Release && `"$CMake`" --build `"$BuildDir`""
+  cmd /s /c "call `"$VcVars64`" >nul && `"$CMake`" -S `"$NativeSource`" -B `"$BuildDir`" -G `"NMake Makefiles`" -DCMAKE_BUILD_TYPE=Release && `"$CMake`" --build `"$BuildDir`" & exit /b %errorlevel%"
 }

@@ -76,7 +76,7 @@ The current spike has the Tauri UI, Rust command surface, diagnostics path, and 
 - Windows 11 should select `media-foundation`.
 - Windows 10 should select `directshow`.
 
-Actual camera registration still needs native COM implementation work: a Media Foundation Custom Media Source on Windows 11 and a DirectShow capture source filter on Windows 10.
+Windows 10 DirectShow COM registration is now wired into the native helper. It still needs elevated installation and deeper frame-output work before Zoom preview is considered done. Windows 11 still needs the Media Foundation Custom Media Source path.
 
 Once native registration is implemented:
 
@@ -106,12 +106,12 @@ Expected current result on Windows 11:
 Virtual camera API support check succeeded for Chinaski Virtual Camera using backend media-foundation
 ```
 
-`register` is still expected to fail with native `E_NOTIMPL` until the COM source/filter is implemented.
+On Windows 10, `register` now attempts real DirectShow COM/filter registration. If it returns `0x80070005`, run the registration step from an elevated PowerShell. On Windows 11, `register` is still expected to return native `E_NOTIMPL` until the Media Foundation Custom Media Source is implemented.
 
 ## Known Limitations
 
-- The native virtual camera registration is a documented placeholder.
-- The C++ module does not yet implement a COM Custom Media Source or DirectShow source filter.
+- Windows 10 DirectShow COM/filter registration is implemented, but full frame delivery is still early.
+- The C++ module does not yet implement a complete streaming DirectShow source filter or the Windows 11 Media Foundation Custom Media Source.
 - The fallback frame is represented as Rust metadata and a UI preview placeholder; it is not yet delivered to Windows camera clients.
 - No physical camera, image, or video source is implemented yet.
 - No SQLite media library yet.
