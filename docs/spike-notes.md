@@ -2,13 +2,14 @@
 
 ## Chosen Virtual Camera Approach
 
-The spike follows the Windows 11 Media Foundation virtual camera path:
+The spike follows two Windows virtual camera paths:
 
-1. C++ COM DLL implements a Custom Media Source.
-2. Installer/elevated helper registers the COM class.
-3. Registration code calls `MFCreateVirtualCamera`.
-4. Windows exposes `Chinaski Virtual Camera` as a video capture device.
-5. Zoom or another client opens that device and receives frames from the Custom Media Source.
+1. Windows 11: C++ COM DLL implements a Media Foundation Custom Media Source.
+2. Windows 11: installer/elevated helper registers the COM class and calls `MFCreateVirtualCamera`.
+3. Windows 10: C++ COM DLL implements a DirectShow virtual capture source filter.
+4. Windows 10: installer/elevated helper registers the filter under the video input device category.
+5. Windows exposes `Chinaski Virtual Camera` as a video capture device.
+6. Zoom or another client opens that device and receives frames from the selected native source/filter.
 
 This is the primary technical risk. A preview inside the Tauri window is not enough and is not treated as success.
 
@@ -19,18 +20,21 @@ Planned Windows APIs and concepts:
 - `MFCreateVirtualCamera`
 - `IMFVirtualCamera`
 - Media Foundation Custom Media Source interfaces
-- COM registration for the media source DLL
+- DirectShow capture source filter interfaces
+- COM registration for the media source/filter DLL
 - Windows camera privacy/device enumeration paths
 
-The native skeleton links Media Foundation libraries but does not yet call a working `MFCreateVirtualCamera` path.
+The native skeleton detects the target backend but does not yet register a working Media Foundation source or DirectShow filter.
 
 ## Current Limitations
 
-- `RegisterChinaskiVirtualCamera` returns `E_NOTIMPL`.
-- No COM Custom Media Source exists yet.
+- `CheckChinaskiVirtualCameraSupport` dynamically checks Media Foundation support on Windows 11 and DirectShow runtime support on Windows 10.
+- `GetChinaskiVirtualCameraBackend` reports `media-foundation`, `directshow`, or `unsupported`.
+- `RegisterChinaskiVirtualCamera` checks backend support first, then returns `E_NOTIMPL` until the native source/filter exists.
+- No COM Custom Media Source or DirectShow source filter exists yet.
 - No frame buffer or IPC path exists yet.
 - No persistent install/uninstall state exists yet.
-- The Rust bridge returns a clear `NativeRegistrationMissing` error for registration.
+- The Rust bridge calls `chinaski-vcamctl.exe` and returns native stdout/stderr into Diagnostics.
 
 ## Permissions
 
@@ -41,8 +45,9 @@ Registration may require elevated PowerShell or an installer because COM registr
 After implementing registration:
 
 ```powershell
-.\scripts\install-virtual-camera.ps1
+.\scripts\build.ps1 -NativeOnly
 .\scripts\check-virtual-camera.ps1
+.\scripts\install-virtual-camera.ps1
 ```
 
 Also verify manually:
@@ -54,6 +59,8 @@ Also verify manually:
 
 Success means Zoom lists `Chinaski Virtual Camera` as a camera device. The next success criterion is that Zoom displays the test frame.
 
+On Windows 10, `check-virtual-camera.ps1` should report `using backend directshow`. On Windows 11, it should report `using backend media-foundation`.
+
 ## Zoom-Specific Risks
 
 - Zoom may cache camera device lists; restart Zoom after registration.
@@ -64,11 +71,10 @@ Success means Zoom lists `Chinaski Virtual Camera` as a camera device. The next 
 
 ## First Spike Acceptance
 
-This spike is not complete until a Windows 11 machine confirms:
+This spike is not complete until Windows 10 and Windows 11 confirm:
 
 - `Chinaski Virtual Camera` appears as a video capture device;
 - Zoom lists it;
 - a generated fallback/test frame appears in Zoom.
 
-The current repository state reaches the project scaffold and command boundary, but the native MF implementation still needs focused work.
-
+The current repository state reaches the project scaffold, command boundary, and backend detection. Native Media Foundation and DirectShow registration/output still need focused work.

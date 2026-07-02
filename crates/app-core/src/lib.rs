@@ -23,7 +23,7 @@ impl AppCore {
             Ok(()) => {
                 self.diagnostics.set_status(CameraStatus::Registered);
                 self.diagnostics.info(format!(
-                    "Registered '{}' as a Windows Media Foundation virtual camera.",
+                    "Registered '{}' as a Windows virtual camera.",
                     self.bridge.camera_name()
                 ));
                 Ok(self.diagnostics())
@@ -94,4 +94,3 @@ impl Default for AppCore {
         Self::new()
     }
 }
-

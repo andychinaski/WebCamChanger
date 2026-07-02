@@ -84,7 +84,7 @@ function App() {
           <div className="mx-auto max-w-6xl space-y-6">
             <header className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.16em] text-accent">Windows 11 technical spike</p>
+                <p className="text-sm uppercase tracking-[0.16em] text-accent">Windows virtual camera spike</p>
                 <h2 className="mt-2 text-3xl font-semibold">{diagnostics.camera_name}</h2>
               </div>
               <StatusBadge status={diagnostics.status} />
@@ -100,7 +100,7 @@ function App() {
                   <div className="text-center">
                     <Activity className="mx-auto mb-3 text-accent" size={38} />
                     <p className="text-lg font-semibold">SPIKE FRAME PLACEHOLDER</p>
-                    <p className="mt-1 text-sm text-zinc-300">Real MF frame delivery is still native-module work.</p>
+                    <p className="mt-1 text-sm text-zinc-300">Real native frame delivery is still backend work.</p>
                   </div>
                 </div>
               </section>
@@ -163,4 +163,3 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <App />
   </React.StrictMode>
 );
-

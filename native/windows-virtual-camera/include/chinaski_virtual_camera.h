@@ -8,4 +8,6 @@
 
 CHINASKI_API int RegisterChinaskiVirtualCamera();
 CHINASKI_API int UnregisterChinaskiVirtualCamera();
-
+CHINASKI_API int CheckChinaskiVirtualCameraSupport();
+CHINASKI_API const char* GetChinaskiVirtualCameraBackend();
+CHINASKI_API const wchar_t* GetChinaskiVirtualCameraName();

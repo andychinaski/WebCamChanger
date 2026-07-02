@@ -15,15 +15,9 @@ if (-not $Helper) {
 
 $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-  Write-Warning "Virtual camera registration may require elevated PowerShell."
+  Write-Warning "Virtual camera unregister may require elevated PowerShell."
 }
 
-Write-Host "Checking Windows virtual camera backend support..."
-& $Helper status
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-Write-Host "Registering Chinaski Virtual Camera..."
-& $Helper register
+Write-Host "Unregistering Chinaski Virtual Camera..."
+& $Helper unregister
 exit $LASTEXITCODE

@@ -1,6 +1,6 @@
 # Manual Testing
 
-These tests are for Windows 11.
+These tests are for Windows 10 and Windows 11.
 
 ## 1. Desktop App Launch
 
@@ -16,7 +16,7 @@ These tests are for Windows 11.
 3. Click `Show diagnostics`.
 4. Verify diagnostics show `Chinaski Virtual Camera`.
 
-Expected current spike result: app launches if dependencies are installed. Registration will report a documented native placeholder until the Media Foundation module is finished.
+Expected current spike result: app launches if dependencies are installed. Registration calls the native helper and reports either platform support failure, `E_NOTIMPL`, or a future success result.
 
 ## Desktop Packaging
 
@@ -51,7 +51,12 @@ Expected current spike result: the desktop shell launches. The MSI does not regi
 
 Expected final result: diagnostics show registered state.
 
-Expected current spike result: registration returns a clear `NativeRegistrationMissing` or native `E_NOTIMPL` path.
+Expected current spike result: registration calls `chinaski-vcamctl.exe`. The support check should pass and print the selected backend:
+
+- Windows 10: `using backend directshow`
+- Windows 11: `using backend media-foundation`
+
+The actual register step should still return native `E_NOTIMPL` until the DirectShow source filter and Media Foundation Custom Media Source exist.
 
 ## 3. Visibility In Windows
 
@@ -72,7 +77,7 @@ Expected final result: the camera appears as a video capture device.
 2. Open Zoom > Settings > Video.
 3. Select `Chinaski Virtual Camera`.
 
-Expected final result: Zoom lists the camera and can open it.
+Expected final result: Zoom lists the camera and can open it. On Windows 10, Zoom/other conferencing apps are the primary validation target for the DirectShow backend; the Windows Camera app may not enumerate every DirectShow virtual source.
 
 ## 5. Fallback/Test Frame
 

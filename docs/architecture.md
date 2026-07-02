@@ -9,11 +9,13 @@ UI
 -> Tauri commands
 -> Rust backend
 -> Virtual Camera Bridge
--> Windows Media Foundation Custom Media Source
+-> Windows Virtual Camera Backend
+   -> Windows 11: Media Foundation Custom Media Source
+   -> Windows 10: DirectShow Capture Source Filter
 -> Zoom / Discord / Browser
 ```
 
-The UI must never call Media Foundation directly. React renders state and invokes Tauri commands. Rust owns application state, diagnostics, lifecycle orchestration, and eventually media pipeline state. The native C++ module owns the Windows camera boundary.
+The UI must never call Media Foundation or DirectShow directly. React renders state and invokes Tauri commands. Rust owns application state, diagnostics, lifecycle orchestration, and eventually media pipeline state. The native C++ module owns the Windows camera boundary.
 
 ## Components
 
@@ -90,17 +92,17 @@ The current crate only defines the fallback/test frame metadata. Real decoding, 
 
 Status: `spike`.
 
-`crates/virtual-camera-bridge` defines the Rust-facing lifecycle API and platform checks. `native/windows-virtual-camera` defines the C++ DLL boundary.
+`crates/virtual-camera-bridge` defines the Rust-facing lifecycle API and platform checks. `native/windows-virtual-camera` defines the C++ DLL/helper boundary and selects a backend.
 
 Real work still required:
 
-- implement a COM Custom Media Source;
-- register the COM class;
-- call `MFCreateVirtualCamera`;
-- store/remove the virtual camera registration;
+- implement a COM Custom Media Source for Windows 11;
+- register the Windows 11 COM class and call `MFCreateVirtualCamera`;
+- implement a DirectShow capture source filter for Windows 10;
+- register/remove the selected backend;
 - deliver frames from Rust to native code.
 
-## Windows Media Foundation Custom Media Source
+## Windows Native Camera Backends
 
 Status: `planned`.
 
@@ -108,8 +110,10 @@ The C++ module currently contains a buildable registration skeleton and exported
 
 - `RegisterChinaskiVirtualCamera`
 - `UnregisterChinaskiVirtualCamera`
+- `CheckChinaskiVirtualCameraSupport`
+- `GetChinaskiVirtualCameraBackend`
 
-It intentionally returns `E_NOTIMPL` until the COM source and installation flow exist.
+It detects Media Foundation on Windows 11 and DirectShow on Windows 10. It intentionally returns `E_NOTIMPL` for registration until the backend source/filter and installation flow exist.
 
 ## Diagnostics
 
@@ -124,11 +128,10 @@ Diagnostics show:
 - recent events;
 - last error.
 
-Future diagnostics should add Media Foundation HRESULTs, source health, FPS, pipeline latency, and privacy/access hints.
+Future diagnostics should add backend name, native HRESULTs, source health, FPS, pipeline latency, and privacy/access hints.
 
 ## Media Library
 
 Status: `planned`.
 
 The future library will use SQLite and store imported media, tags, search metadata, thumbnails, source stats, and last-used timestamps. It is not needed until the virtual camera registration and test frame are proven.
-
