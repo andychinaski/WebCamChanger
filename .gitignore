@@ -1,0 +1,184 @@
+# =========================
+# OS / editors
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*.tmp
+*.temp
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.iml
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Environment / secrets
+# =========================
+.env
+.env.*
+!.env.example
+*.local
+
+# =========================
+# Node / frontend
+# =========================
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+.next/
+out/
+
+# =========================
+# Tauri
+# =========================
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/.taurignore
+
+# Tauri generated bundles
+apps/desktop/src-tauri/target/release/bundle/
+apps/desktop/src-tauri/target/debug/bundle/
+
+# =========================
+# Rust
+# =========================
+target/
+Cargo.lock
+
+# Keep Cargo.lock if this is an application-only repo.
+# Remove Cargo.lock from .gitignore when dependency versions should be pinned.
+
+# =========================
+# C / C++ / CMake / Visual Studio
+# =========================
+**/build/
+**/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.ipdb
+*.iobj
+*.res
+*.tlb
+*.tli
+*.tlh
+*.aps
+*.ncb
+*.opendb
+*.sdf
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+Debug/
+Release/
+x64/
+x86/
+
+# =========================
+# Media / generated assets
+# =========================
+assets/cache/
+assets/thumbnails/
+media-library/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wmv
+*.flv
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.bmp
+
+# Keep sample fixtures if needed
+!assets/fallback/**
+!assets/icons/**
+!docs/**/samples/**
+
+# =========================
+# SQLite / local app data
+# =========================
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+app-data/
+
+# =========================
+# FFmpeg / GStreamer generated files
+# =========================
+*.yuv
+*.rgb
+*.raw
+*.wav
+*.pcm
+*.ts
+*.m3u8
+*.segment
+
+# =========================
+# Installer / release artifacts
+# =========================
+*.msi
+*.msix
+*.appx
+*.appxbundle
+*.exe.sig
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tgz
+releases/
+
+# =========================
+# Test output
+# =========================
+coverage/
+test-results/
+playwright-report/
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.old
+*.orig
