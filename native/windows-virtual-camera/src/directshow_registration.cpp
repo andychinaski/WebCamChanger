@@ -50,7 +50,7 @@ HRESULT GuidToString(REFGUID guid, wchar_t* text, DWORD textLength) {
   return written > 0 ? S_OK : E_FAIL;
 }
 
-HRESULT RegisterComServer(const wchar_t* modulePath) {
+HRESULT RegisterComServerInRoot(HKEY root, const wchar_t* modulePath) {
   wchar_t clsidText[64]{};
   HRESULT hr = GuidToString(CLSID_ChinaskiDirectShowVirtualCamera, clsidText,
                             ARRAYSIZE(clsidText));
@@ -66,7 +66,7 @@ HRESULT RegisterComServer(const wchar_t* modulePath) {
   }
 
   HKEY clsidKey = nullptr;
-  hr = CreateKey(HKEY_CURRENT_USER, clsidPath, &clsidKey);
+  hr = CreateKey(root, clsidPath, &clsidKey);
   if (FAILED(hr)) {
     return hr;
   }
@@ -85,7 +85,7 @@ HRESULT RegisterComServer(const wchar_t* modulePath) {
   }
 
   HKEY inprocKey = nullptr;
-  hr = CreateKey(HKEY_CURRENT_USER, inprocPath, &inprocKey);
+  hr = CreateKey(root, inprocPath, &inprocKey);
   if (FAILED(hr)) {
     return hr;
   }
@@ -98,7 +98,20 @@ HRESULT RegisterComServer(const wchar_t* modulePath) {
   return hr;
 }
 
-HRESULT UnregisterComServer() {
+HRESULT RegisterComServer(const wchar_t* modulePath) {
+  HRESULT hr = RegisterComServerInRoot(HKEY_CURRENT_USER, modulePath);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  const HRESULT machineHr = RegisterComServerInRoot(HKEY_LOCAL_MACHINE, modulePath);
+  if (machineHr == HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED)) {
+    return S_OK;
+  }
+  return machineHr;
+}
+
+HRESULT UnregisterComServerInRoot(HKEY root) {
   wchar_t clsidText[64]{};
   HRESULT hr = GuidToString(CLSID_ChinaskiDirectShowVirtualCamera, clsidText,
                             ARRAYSIZE(clsidText));
@@ -113,11 +126,24 @@ HRESULT UnregisterComServer() {
     return hr;
   }
 
-  const LSTATUS status = RegDeleteTreeW(HKEY_CURRENT_USER, clsidPath);
+  const LSTATUS status = RegDeleteTreeW(root, clsidPath);
   if (status == ERROR_FILE_NOT_FOUND) {
     return S_OK;
   }
   return HRESULT_FROM_WIN32(status);
+}
+
+HRESULT UnregisterComServer() {
+  const HRESULT userHr = UnregisterComServerInRoot(HKEY_CURRENT_USER);
+  const HRESULT machineHr = UnregisterComServerInRoot(HKEY_LOCAL_MACHINE);
+  if (FAILED(userHr)) {
+    return userHr;
+  }
+  if (machineHr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) ||
+      machineHr == HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED)) {
+    return S_OK;
+  }
+  return machineHr;
 }
 
 HRESULT RegisterWithFilterMapper() {
